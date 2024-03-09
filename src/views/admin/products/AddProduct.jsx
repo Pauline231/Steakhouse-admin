@@ -1,3 +1,4 @@
+import { compress } from 'constant/compress'
 import { clearRealStaus } from 'features/productSlice'
 import { showProductrealStatus } from 'features/productSlice'
 import { addProduct } from 'features/productSlice'
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 
 const AddProduct = () => {
     const [selectedImage, setSelectedImage] = useState();
+    const [compressedImg, setCompressedImg] = useState()
 
     // This function will be triggered when the file field change
     const imageChange = (e) => {
@@ -19,15 +21,21 @@ const AddProduct = () => {
   
     // This function will be triggered when the "Remove This Image" button is clicked
     const removeSelectedImage = () => {
-      setSelectedImage();
+      return setSelectedImage();
     };
-    const canShow = Boolean(selectedImage)
+    
+    const canShow = Boolean(selectedImage)&&Boolean(compressedImg)
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch() 
     const realStatus = useSelector(showProductrealStatus)
     const {register, handleSubmit, formState} = useForm()
+
+    //to compress the image before upload
+    selectedImage && compress(selectedImage, function(result){
+      compressedImg? console.log('done') : setCompressedImg(result)
+     })
     const handleProduct = (data) =>{
-        const completeData = {...data,productImage : selectedImage}
+       const completeData = {...data,productImage : compressedImg}
         dispatch(addProduct(completeData))
     }
     if(realStatus === 200){
@@ -99,7 +107,7 @@ const AddProduct = () => {
             <input type='file' onChange={imageChange} />
             </div>
             <div >
-              {selectedImage&& <img src={URL.createObjectURL(selectedImage)}  height={280} width={280} />}  
+              {selectedImage&& <img src={URL.createObjectURL(selectedImage)} alt='productImg' height={280} width={280} />}  
               {canShow?<div>
               <button onClick={removeSelectedImage} disabled={!canShow} className= 'bg-red-500 text-white rounded-md px-3 py-1'>Remove this image</button>
               </div>:null}

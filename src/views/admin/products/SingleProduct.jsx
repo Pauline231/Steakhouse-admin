@@ -2,10 +2,11 @@ import { clearRealStaus } from 'features/productSlice'
 import { updateSingleProduct } from 'features/productSlice'
 import { showAllProducts } from 'features/productSlice'
 import { showProductrealStatus } from 'features/productSlice'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {useForm} from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
+import { compress } from 'constant/compress'
 
 
 const SingleProduct = () => {
@@ -21,6 +22,9 @@ const SingleProduct = () => {
     const realStatus = useSelector(showProductrealStatus)
     const {register, handleSubmit, formState} = useForm()
     const [selectedImage, setSelectedImage] = useState();
+    const [compressedImg, setCompressedImg] = useState()
+
+
 
     // This function will be triggered when the file field change
     const imageChange = (e) => {
@@ -33,9 +37,17 @@ const SingleProduct = () => {
     const removeSelectedImage = () => {
       setSelectedImage();
     };
-    const canShow = Boolean(selectedImage)
+
+
+    //to compress the image before upload
+    selectedImage && compress(selectedImage, function(result){
+      compressedImg? console.log('done') : setCompressedImg(result)
+     })
+
+
+    const canShow = Boolean(selectedImage)&&Boolean(compressedImg)
     const handleProduct = (data) =>{
-        const completedata = {...data,productImage : selectedImage}
+        const completedata = {...data,productImage : compressedImg}
         dispatch(updateSingleProduct({id,completedata}))
     }
     if(realStatus === 200){
