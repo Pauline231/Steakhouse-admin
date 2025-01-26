@@ -25,6 +25,7 @@ export const authSlice = createSlice({
         })
         .addCase(LogInfirst.rejected,(state)=>{
             state.status = STATUS.ERROR
+            alert("Log in error")
         })
         .addCase(LogInfirst.fulfilled,(state,action)=>{
             state.status = STATUS.SUCCESS
